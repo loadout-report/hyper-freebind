@@ -609,6 +609,7 @@ fn connect(
     #[cfg(all(unix, feature = "freebind"))]
     {
         // we set freebind before we call bind on the socket
+        trace!("tcp enable freebind");
         match domain {
             Domain::IPV4 => socket.set_freebind(true).map_err(ConnectError::m("tcp set_freebind error"))?,
             Domain::IPV6 => socket.set_freebind_ipv6(true).map_err(ConnectError::m("tcp set_freebind_ipv6 error"))?,
