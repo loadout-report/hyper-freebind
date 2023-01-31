@@ -83,6 +83,8 @@ struct Config {
     reuse_address: bool,
     send_buffer_size: Option<usize>,
     recv_buffer_size: Option<usize>,
+    #[cfg(all(feature = "freebind", any(target_os = "android", target_os = "linux")))]
+    freebind: bool,
 }
 
 // ===== impl HttpConnector =====
@@ -123,6 +125,8 @@ impl<R> HttpConnector<R> {
                 reuse_address: false,
                 send_buffer_size: None,
                 recv_buffer_size: None,
+                #[cfg(all(feature = "freebind", any(target_os = "android", target_os = "linux")))]
+                freebind: false,
             }),
             resolver,
         }
@@ -164,6 +168,13 @@ impl<R> HttpConnector<R> {
     #[inline]
     pub fn set_recv_buffer_size(&mut self, size: Option<usize>) {
         self.config_mut().recv_buffer_size = size;
+    }
+
+    /// Sets IP_FREEBIND or IPV6_FREEBIND on the socket.
+    #[cfg(all(feature = "freebind", any(target_os = "android", target_os = "linux")))]
+    #[inline]
+    pub fn set_freebind(&mut self, freebind: bool) {
+        self.config_mut().freebind = freebind;
     }
 
     /// Set that all sockets are bound to the configured address before connection.
@@ -609,7 +620,7 @@ fn connect(
         .map_err(ConnectError::m("tcp set_nonblocking error"))?;
 
     #[cfg(all(feature = "freebind", any(target_os = "android", target_os = "linux")))]
-    {
+    if config.freebind {
         // we set freebind before we call bind on the socket
         trace!("tcp enable freebind");
         match domain {
