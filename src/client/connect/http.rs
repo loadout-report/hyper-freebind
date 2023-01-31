@@ -609,8 +609,11 @@ fn connect(
     #[cfg(all(unix, feature = "freebind"))]
     {
         // we set freebind before we call bind on the socket
-        socket.set_freebind(true).map_err(ConnectError::m("tcp set_freebind error"))?;
-        socket.set_freebind_ipv6(true).map_err(ConnectError::m("tcp set_freebind_ipv6 error"))?;
+        match domain {
+            Domain::IPV4 => socket.set_freebind(true).map_err(ConnectError::m("tcp set_freebind error"))?,
+            Domain::IPV6 => socket.set_freebind_ipv6(true).map_err(ConnectError::m("tcp set_freebind_ipv6 error"))?,
+            _ => return ConnectError::m("tcp invalid domain"),
+        }
     }
 
     if let Some(dur) = config.keep_alive_timeout {
