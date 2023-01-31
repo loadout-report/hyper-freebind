@@ -83,7 +83,7 @@ full = [
     "freebind"
 ]
 
-freebind = []
+freebind = ["socket2/all"]
 # HTTP versions
 http1 = []
 http2 = ["h2"]
