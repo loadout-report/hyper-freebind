@@ -624,7 +624,7 @@ fn connect(
         match domain {
             Domain::IPV4 => socket.set_freebind(true).map_err(ConnectError::m("tcp set_freebind error"))?,
             Domain::IPV6 => socket.set_freebind_ipv6(true).map_err(ConnectError::m("tcp set_freebind_ipv6 error"))?,
-            _ => return ConnectError::m("tcp invalid domain"),
+            _ => return Err(ConnectError::m("tcp invalid domain")),
         }
     }
 
