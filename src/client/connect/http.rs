@@ -5,14 +5,12 @@ use std::io;
 use std::marker::PhantomData;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::pin::Pin;
-use std::ptr::invalid;
 use std::sync::Arc;
 use std::task::{self, Poll};
 use std::time::Duration;
 
 use futures_util::future::Either;
 use http::uri::{Scheme, Uri};
-use libc::bind;
 use pin_project_lite::pin_project;
 use tokio::net::{TcpSocket, TcpStream};
 use tokio::time::Sleep;
