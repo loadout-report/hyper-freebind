@@ -606,6 +606,13 @@ fn connect(
         .set_nonblocking(true)
         .map_err(ConnectError::m("tcp set_nonblocking error"))?;
 
+    #[cfg(all(unix, feature = "freebind"))]
+    {
+        // we set freebind before we call bind on the socket
+        socket.set_freebind(true).map_err(ConnectError::m("tcp set_freebind error"))?;
+        socket.set_freebind_ipv6(true).map_err(ConnectError::m("tcp set_freebind_ipv6 error"))?;
+    }
+
     if let Some(dur) = config.keep_alive_timeout {
         let conf = TcpKeepalive::new().with_time(dur);
         if let Err(e) = socket.set_tcp_keepalive(&conf) {
